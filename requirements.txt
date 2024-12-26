@@ -1,0 +1,4 @@
+django
+djangorestframework
+psycopg2-binary  # Or psycopg2 if binary doesn't work
+stripe
