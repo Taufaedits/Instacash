@@ -10,6 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
+import datetime
+import pyotp
+from django.core.cache import cache  # For rate limiting
+from rest_framework.settings import api_settings
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,9 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'auth',
     'users', 
     'tiers',
-    'debug_toolbar',
+    'otp',
+    #'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+   # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'instacash_backend.urls'
@@ -88,6 +95,20 @@ DATABASES = {
         'PORT': '5432',                             # Default PostgreSQL port
     }
 }
+
+# Email Configuration with Environment Variables
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+
+# OTP Settings
+OTP_LIFETIME = 300  # 5 minutes in seconds
+OTP_MAX_ATTEMPTS = 3
+OTP_ATTEMPT_WINDOW = 24 * 3600  # 24 hours in seconds
 
 
 # Password validation
